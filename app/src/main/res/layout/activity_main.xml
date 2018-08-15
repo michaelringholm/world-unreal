@@ -57,7 +57,7 @@
             android:layout_height="wrap_content"
             android:adjustViewBounds="false"
             android:cropToPadding="true"
-            android:scaleType="fitEnd"
+            android:scaleType="fitXY"
             app:srcCompat="@drawable/forest" />
 
         <Button

@@ -23,6 +23,8 @@ import android.view.animation.Animation;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.FileOutputStream;
+
 public class MainActivity extends AppCompatActivity {
 
     private TextView mTextMessage;
@@ -61,6 +63,8 @@ public class MainActivity extends AppCompatActivity {
         mainImage = findViewById(R.id.mainImage);
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+
+        writeToFile("log.txt", "this is sample log contents!");
 
         // Acquire a reference to the system Location Manager
         LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
@@ -119,13 +123,15 @@ public class MainActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.INTERNET}, 10);
             return;
         }
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, minTime, minDistance, locationListener);
+
+        //locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, minTime, minDistance, locationListener);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, minDistance, locationListener);
         Log("Please find some lumber and give it to the innkeeper!");
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-
+        Log("This was what the user chose!");
     }
 
     private void Log(String message) {
@@ -143,5 +149,15 @@ public class MainActivity extends AppCompatActivity {
         anim.start();
     }
 
+    private void writeToFile(String filename, String contents) {
+        FileOutputStream outputStream;
 
+        try {
+            outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
+            outputStream.write(contents.getBytes());
+            outputStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
