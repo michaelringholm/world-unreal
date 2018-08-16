@@ -27,6 +27,12 @@
         tools:layout_editor_absoluteY="8dp">
 
         <TextView
+            android:id="@+id/version"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="v0.0.3" />
+
+        <TextView
             android:id="@+id/latitude"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

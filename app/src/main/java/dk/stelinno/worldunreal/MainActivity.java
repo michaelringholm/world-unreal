@@ -24,13 +24,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.io.FileOutputStream;
+import java.util.Observable;
+import java.util.Observer;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements Observer {
 
     private TextView mTextMessage;
-    private TextView latitude;
-    private TextView longitude;
-    private ImageView mainImage;
+    public TextView latitude;
+    public TextView longitude;
+    public ImageView mainImage;
+    private LocationService _locationService;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -66,81 +69,65 @@ public class MainActivity extends AppCompatActivity {
 
         writeToFile("log.txt", "this is sample log contents!");
 
-        // Acquire a reference to the system Location Manager
-        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-        // Define a listener that responds to location updates
-        LocationListener locationListener = new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
-                latitude.setText(String.valueOf(location.getLatitude()));
-                longitude.setText(String.valueOf(location.getLongitude()));
-                animText(latitude);
-                animText(longitude);
-
-                if(location.getLatitude() == 55.6967093 && location.getLongitude() == 12.4173003)
-                    Log("You found an old rusty sword under a pile of rubble!");
-                if(location.getLatitude() == 55.6962571 && location.getLongitude() == 12.4173742)
-                    Log("You found an small chest buried beneath the dirt!");
-                if(location.getLatitude() == 55.6967119 && location.getLongitude() == 12.4173312)
-                    Log("A skeleton appear from behind the bushes!");
-                if(location.getLatitude() == 55.6967261 && location.getLongitude() == 12.4173368)
-                    Log("You found a glowing necklace on the path!");
-
-                //if(location.getLatitude() == 55.5699629 && location.getLongitude() == 12.2714676)
-                if((location.getLatitude() >= 55.5699550 && location.getLatitude() <= 55.5699700) && (location.getLongitude() >= 12.2714300 && location.getLongitude() <= 12.2715500)) {
-                    Log("You found some lumber, now please go and give it to the innkeeper, hurry!");
-                    int resID = getResources().getIdentifier("lumber","drawable", getPackageName());
-                    mainImage.setImageResource(resID);
-                }
-
-                //if(location.getLatitude() == 55.5698926 && location.getLongitude() == 12.2712468) {
-                if((location.getLatitude() >= 55.5698900 && location.getLatitude() <= 55.5699200) && (location.getLongitude() >= 12.2712200 && location.getLongitude() <= 12.2712700)) {
-                    Log("The innkeeper greets you, thank you my friend that will come in handy!");
-                    int resID = getResources().getIdentifier("innkeeper","drawable", getPackageName());
-                    mainImage.setImageResource(resID);
-                }
-            }
-
-            @Override
-            public void onStatusChanged(String provider, int status, Bundle extras) {
-            }
-
-            @Override
-            public void onProviderEnabled(String provider) {
-            }
-
-            @Override
-            public void onProviderDisabled(String provider) {
-            }
-        };
-
-        //((TextView)findViewById(R.id.test)).setText("step1");
-
-        // Register the listener with the Location Manager to receive location updates
-        long minTime = 10;
-        float minDistance = 1;
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.INTERNET}, 10);
             return;
         }
-
-        //locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, minTime, minDistance, locationListener);
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, minDistance, locationListener);
+        _locationService = new SimpleLocationService((LocationManager)this.getSystemService(Context.LOCATION_SERVICE));
+        // Register the listener with the Location Manager to receive location updates
+        _locationService.start();
         Log("Please find some lumber and give it to the innkeeper!");
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         Log("This was what the user chose!");
+        _locationService.start();
     }
 
-    private void Log(String message) {
+    @Override
+    public void update(Observable o, Object arg) {
+        if(arg != null && arg instanceof SimpleLocation) {
+            SimpleLocation location = (SimpleLocation)arg;
+
+            latitude.setText(String.valueOf(location.getLatitude()));
+            longitude.setText(String.valueOf(location.getLongitude()));
+            animText(latitude);
+            animText(longitude);
+
+            if (_locationService.isAtLocation(location.getLatitude(), location.getLongitude(),  55.6967093, 12.4173003))
+                Log("You found an old rusty sword under a pile of rubble!");
+            else if (_locationService.isAtLocation(location.getLatitude(), location.getLongitude(),  55.6967093, 12.4173003))
+                Log("You found an small chest buried beneath the dirt!");
+            else if (_locationService.isAtLocation(location.getLatitude(), location.getLongitude(),  55.6967093, 12.4173003))
+                Log("A skeleton appear from behind the bushes!");
+            else if (_locationService.isAtLocation(location.getLatitude(), location.getLongitude(),  55.6967093, 12.4173003))
+                Log("You found a glowing necklace on the path!");
+
+            else if (_locationService.isAtLocation(location.getLatitude(), location.getLongitude(),  55.6967093, 12.4173003)) {
+                Log("You found some lumber, now please go and give it to the innkeeper, hurry!");
+                int resID = getResources().getIdentifier("lumber", "drawable", getPackageName());
+                mainImage.setImageResource(resID);
+            }
+
+            else if (_locationService.isAtLocation(location.getLatitude(), location.getLongitude(),  55.6967093, 12.4173003)) {
+                Log("The innkeeper greets you, thank you my friend that will come in handy!");
+                int resID = getResources().getIdentifier("innkeeper", "drawable", getPackageName());
+                mainImage.setImageResource(resID);
+            }
+            else {
+                Log("Nothing happens at this location!");
+            }
+        }
+    }
+
+    public void Log(String message) {
         TextView description = (TextView) findViewById(R.id.description);
         description.setText(message);
         animText(description);
     }
 
-    private void animText(TextView textView) {
+    public void animText(TextView textView) {
         ObjectAnimator anim = ObjectAnimator.ofInt(textView, "backgroundColor", Color.WHITE, Color.RED, Color.WHITE);
         anim.setDuration(1500);
         anim.setEvaluator(new ArgbEvaluator());
@@ -149,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
         anim.start();
     }
 
-    private void writeToFile(String filename, String contents) {
+    public void writeToFile(String filename, String contents) {
         FileOutputStream outputStream;
 
         try {
@@ -160,4 +147,5 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
+
 }
