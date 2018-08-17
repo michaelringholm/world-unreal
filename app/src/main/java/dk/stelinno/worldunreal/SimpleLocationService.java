@@ -1,15 +1,13 @@
 package dk.stelinno.worldunreal;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
-import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
 
 import java.util.Observable;
+import java.util.Observer;
 
 public class SimpleLocationService extends Observable implements LocationService {
     private LocationManager _locationManager;
@@ -21,8 +19,12 @@ public class SimpleLocationService extends Observable implements LocationService
         _locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
+                MainActivity.getCurrent().Log("onLocationChanged called!");
                 SimpleLocation simpleLocation = new SimpleLocation(location.getLatitude(),location.getLongitude());
+                setChanged();
                 notifyObservers(simpleLocation);
+                int observerCount = SimpleLocationService.super.countObservers();
+                MainActivity.getCurrent().Log("[" + observerCount + "] observers have been notified!");
             }
 
             @Override
@@ -39,12 +41,18 @@ public class SimpleLocationService extends Observable implements LocationService
         };
     }
 
+    public void addObserver(Observer observer) {
+        super.addObserver(observer);
+    }
+
     @SuppressLint("MissingPermission")
     public void start() {
-        //locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, minTime, minDistance, locationListener);
-        long minTime = 10;
-        float minDistance = 1;
-        _locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, minDistance, _locationListener);
+        MainActivity.getCurrent().Log("start called!");
+        long minTime = 0;
+        float minDistance = 0;
+        //_locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, minDistance, _locationListener);
+        _locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, minTime, minDistance, _locationListener);
+        MainActivity.getCurrent().Log("request updates called!");
     }
 
     public SimpleLocation currentLocation() {

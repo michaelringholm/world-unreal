@@ -35,29 +35,18 @@ public class MainActivity extends AppCompatActivity implements Observer {
     public ImageView mainImage;
     private LocationService _locationService;
 
-    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
-            = new BottomNavigationView.OnNavigationItemSelectedListener() {
-
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            switch (item.getItemId()) {
-                case R.id.navigation_home:
-                    mTextMessage.setText(R.string.title_home);
-                    return true;
-                case R.id.navigation_dashboard:
-                    mTextMessage.setText(R.string.title_dashboard);
-                    return true;
-                case R.id.navigation_notifications:
-                    mTextMessage.setText(R.string.title_notifications);
-                    return true;
-            }
-            return false;
-        }
-    };
+    private static MainActivity _instance = null;
+    public static MainActivity getCurrent() {
+        if(_instance != null)
+            return _instance;
+        else
+            return null;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        _instance = this;
         setContentView(R.layout.activity_main);
 
         mTextMessage = findViewById(R.id.message);
@@ -74,6 +63,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
             return;
         }
         _locationService = new SimpleLocationService((LocationManager)this.getSystemService(Context.LOCATION_SERVICE));
+        _locationService.addObserver(this);
         // Register the listener with the Location Manager to receive location updates
         _locationService.start();
         Log("Please find some lumber and give it to the innkeeper!");
@@ -85,8 +75,10 @@ public class MainActivity extends AppCompatActivity implements Observer {
         _locationService.start();
     }
 
+
     @Override
     public void update(Observable o, Object arg) {
+        Log("received update event!");
         if(arg != null && arg instanceof SimpleLocation) {
             SimpleLocation location = (SimpleLocation)arg;
 
@@ -95,6 +87,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
             animText(latitude);
             animText(longitude);
 
+            Log("pos=" + location.getLatitude() + ";" + location.getLongitude());
             if (_locationService.isAtLocation(location.getLatitude(), location.getLongitude(),  55.6967093, 12.4173003))
                 Log("You found an old rusty sword under a pile of rubble!");
             else if (_locationService.isAtLocation(location.getLatitude(), location.getLongitude(),  55.6967093, 12.4173003))
@@ -122,9 +115,10 @@ public class MainActivity extends AppCompatActivity implements Observer {
     }
 
     public void Log(String message) {
-        TextView description = (TextView) findViewById(R.id.description);
-        description.setText(message);
-        animText(description);
+        TextView logView = findViewById(R.id.logView);
+        logView.append(message + "\r\n");
+        //logView.setText(message);
+        animText(logView);
     }
 
     public void animText(TextView textView) {
@@ -148,4 +142,21 @@ public class MainActivity extends AppCompatActivity implements Observer {
         }
     }
 
+    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
+        @Override
+        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.navigation_home:
+                    mTextMessage.setText(R.string.title_home);
+                    return true;
+                case R.id.navigation_dashboard:
+                    mTextMessage.setText(R.string.title_dashboard);
+                    return true;
+                case R.id.navigation_notifications:
+                    mTextMessage.setText(R.string.title_notifications);
+                    return true;
+            }
+            return false;
+        }
+    };
 }
