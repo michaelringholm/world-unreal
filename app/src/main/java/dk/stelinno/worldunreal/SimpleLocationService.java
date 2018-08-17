@@ -42,8 +42,8 @@ public class SimpleLocationService extends Observable implements LocationService
     @SuppressLint("MissingPermission")
     public void start() {
         //locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, minTime, minDistance, locationListener);
-        long minTime = 10;
-        float minDistance = 1;
+        long minTime = 0;
+        float minDistance = 0;
         _locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, minDistance, _locationListener);
     }
 
