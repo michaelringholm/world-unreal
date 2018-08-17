@@ -80,7 +80,7 @@
             android:adjustViewBounds="false"
             android:cropToPadding="true"
             android:scaleType="fitXY"
-            app:srcCompat="@drawable/forest" />
+            app:srcCompat="@drawable/azure" />
 
         <Button
             android:id="@+id/Claim"

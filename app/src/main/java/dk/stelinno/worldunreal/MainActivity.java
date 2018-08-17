@@ -148,12 +148,16 @@ public class MainActivity extends AppCompatActivity implements Observer {
             switch (item.getItemId()) {
                 case R.id.navigation_home:
                     mTextMessage.setText(R.string.title_home);
+                    //setContentView(R.layout.activity_main);
+
                     return true;
                 case R.id.navigation_dashboard:
                     mTextMessage.setText(R.string.title_dashboard);
+                    setContentView(R.layout.activity_home);
                     return true;
                 case R.id.navigation_notifications:
                     mTextMessage.setText(R.string.title_notifications);
+                    setContentView(R.layout.sample_table_layout);
                     return true;
             }
             return false;
