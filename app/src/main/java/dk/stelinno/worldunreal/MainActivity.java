@@ -21,9 +21,18 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.animation.Animation;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
+import java.io.DataOutputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -32,6 +41,8 @@ public class MainActivity extends AppCompatActivity implements Observer {
     private TextView mTextMessage;
     public TextView latitude;
     public TextView longitude;
+    private TextView _logView;
+    private ScrollView _logScrollView;
     public ImageView mainImage;
     private LocationService _locationService;
 
@@ -55,7 +66,9 @@ public class MainActivity extends AppCompatActivity implements Observer {
         mainImage = findViewById(R.id.mainImage);
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-
+        _logScrollView = findViewById(R.id.logScrollView);
+        _logView = findViewById(R.id.logView);
+        _logView.setEnabled(false);
         writeToFile("log.txt", "this is sample log contents!");
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -114,11 +127,24 @@ public class MainActivity extends AppCompatActivity implements Observer {
         }
     }
 
+    private static SimpleDateFormat _sdf = new SimpleDateFormat("HH:mm:ss.SSS");
+    //private static Calendar _cal = new GregorianCalendar();
     public void Log(String message) {
-        TextView logView = findViewById(R.id.logView);
-        logView.append(message + "\r\n");
+        String now = _sdf.format(new Date());
+        _logView.append(now);_logView.append(" ");_logView.append(message);_logView.append("\r\n");
+        _logScrollView.computeScroll();
+        _logScrollView.scrollTo(0,_logScrollView.getMaxScrollAmount());
+        try {
+            HttpService.getInstance().postHttpDataAsync("http://requestbin.fullcontact.com/15jhhdb1", now.concat(" ").concat(message));
+        } catch (Exception e) {
+            e.printStackTrace();
+            //now = _sdf.format(new Date());
+            //_logView.append(now);_logView.append(" ");_logView.append(e.getMessage());_logView.append("\r\n");
+            //_logScrollView.computeScroll();
+            //_logScrollView.scrollTo(0,_logScrollView.getMaxScrollAmount());
+        }
         //logView.setText(message);
-        animText(logView);
+        //animText(logView);
     }
 
     public void animText(TextView textView) {
@@ -131,14 +157,25 @@ public class MainActivity extends AppCompatActivity implements Observer {
     }
 
     public void writeToFile(String filename, String contents) {
-        FileOutputStream outputStream;
-
+        FileOutputStream outputStream = null;
+        Log("Writing to file...");
         try {
             outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
             outputStream.write(contents.getBytes());
             outputStream.close();
+            Log("Done writing file!");
         } catch (Exception e) {
             e.printStackTrace();
+            Log(e.getMessage());
+        }
+        finally{
+            if(outputStream != null) {
+                try {
+                    outputStream.close();
+                } catch (IOException e) {
+                    Log(e.getMessage());
+                }
+            }
         }
     }
 
