@@ -5,6 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
@@ -45,22 +46,37 @@ public class HttpService {
     public void postHttpDataAsync(String endpoint, String data) throws Exception {
         //CompletableFuture future = new CompletableFuture();
         new Thread(() -> postHttpData(endpoint, data)).start();
-
     }
     // https://requestbin.fullcontact.com/15jhhdb1?inspect
-    private void postHttpData(String endpoint, String data)  {
+    public void postHttpData(String endpoint, String data)  {
         HttpURLConnection con = null;
         DataOutputStream out = null;
+        //data = "{\"logMessage\"=\"Position was 1,2\"}";
         try {
             java.net.URL url = new URL(endpoint);
             con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("POST");
             con.setConnectTimeout(1000);
+
+            con.setInstanceFollowRedirects(false);
             con.setRequestProperty("Content-Type", "application/json");
+            //con.setRequestProperty("Content-Type", "text/plain");
+            con.setRequestProperty("charset", "utf-8");
+
+            byte[] bytes = data.getBytes(StandardCharsets.UTF_8);
+            //con.setRequestProperty( "Content-Length", Integer.toString(data.length()));
+            con.setRequestProperty( "Content-Length", Integer.toString(bytes.length));
+            con.setUseCaches(false);
+
             con.setDoOutput(true);
             out = new DataOutputStream(con.getOutputStream());
-            out.writeBytes(data);
+            //out.writeBytes(data);
+            out.write(bytes);
             out.flush();
+            int responseCode = con.getResponseCode();
+            String responseMessage = con.getResponseMessage();
+            System.out.println(responseCode);
+            System.out.println(responseMessage);
         }
         catch(Exception ex) {
             ex.printStackTrace();

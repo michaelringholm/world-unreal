@@ -27,6 +27,7 @@ import android.widget.TextView;
 import java.io.DataOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -45,6 +46,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
     private ScrollView _logScrollView;
     public ImageView mainImage;
     private LocationService _locationService;
+    private LogService _logService;
 
     private static MainActivity _instance = null;
     public static MainActivity getCurrent() {
@@ -58,6 +60,8 @@ public class MainActivity extends AppCompatActivity implements Observer {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         _instance = this;
+        try { initializeAppProperties(); } catch (Exception e) { e.printStackTrace(); }
+        _logService = SimpleLogService.getInstance();
         setContentView(R.layout.activity_main);
 
         mTextMessage = findViewById(R.id.message);
@@ -80,6 +84,24 @@ public class MainActivity extends AppCompatActivity implements Observer {
         // Register the listener with the Location Manager to receive location updates
         _locationService.start();
         Log("Please find some lumber and give it to the innkeeper!");
+    }
+
+    private void initializeAppProperties() throws Exception {
+        InputStream appPropertiesStream = null;
+
+        try {
+            appPropertiesStream = getBaseContext().getAssets().open("app.properties");
+            System.getProperties().load(appPropertiesStream);
+        }
+        finally {
+            if(appPropertiesStream != null) {
+                try {
+                    appPropertiesStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     @Override
@@ -135,7 +157,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
         _logScrollView.computeScroll();
         _logScrollView.scrollTo(0,_logScrollView.getMaxScrollAmount());
         try {
-            HttpService.getInstance().postHttpDataAsync("http://requestbin.fullcontact.com/15jhhdb1", now.concat(" ").concat(message));
+            _logService.LogMessage(now.concat(" ").concat(message));
         } catch (Exception e) {
             e.printStackTrace();
             //now = _sdf.format(new Date());
