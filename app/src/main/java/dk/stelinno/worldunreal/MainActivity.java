@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
         _logScrollView = findViewById(R.id.logScrollView);
         _logView = findViewById(R.id.logView);
         _logView.setEnabled(false);
-        writeToFile("log.txt", "this is sample log contents!");
+        //writeToFile("log.txt", "this is sample log contents!");
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.INTERNET}, 10);
@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
         _locationService.addObserver(this);
         // Register the listener with the Location Manager to receive location updates
         _locationService.start();
-        Log("Please find some lumber and give it to the innkeeper!");
+        _logService.LogMessage("Please find some lumber and give it to the innkeeper!");
     }
 
     private void initializeAppProperties() throws Exception {
@@ -106,14 +106,14 @@ public class MainActivity extends AppCompatActivity implements Observer {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        Log("This was what the user chose!");
+        _logService.LogMessage("This was what the user chose!");
         _locationService.start();
     }
 
 
     @Override
     public void update(Observable o, Object arg) {
-        Log("received update event!");
+        _logService.LogMessage("received update event!");
         if(arg != null && arg instanceof SimpleLocation) {
             SimpleLocation location = (SimpleLocation)arg;
 
@@ -122,36 +122,36 @@ public class MainActivity extends AppCompatActivity implements Observer {
             animText(latitude);
             animText(longitude);
 
-            Log("pos=" + location.getLatitude() + ";" + location.getLongitude());
+            _logService.LogMessage("pos=" + location.getLatitude() + ";" + location.getLongitude());
             if (_locationService.isAtLocation(location.getLatitude(), location.getLongitude(),  55.6967093, 12.4173003))
-                Log("You found an old rusty sword under a pile of rubble!");
+                _logService.LogMessage("You found an old rusty sword under a pile of rubble!");
             else if (_locationService.isAtLocation(location.getLatitude(), location.getLongitude(),  55.6967093, 12.4173003))
-                Log("You found an small chest buried beneath the dirt!");
+                _logService.LogMessage("You found an small chest buried beneath the dirt!");
             else if (_locationService.isAtLocation(location.getLatitude(), location.getLongitude(),  55.6967093, 12.4173003))
-                Log("A skeleton appear from behind the bushes!");
+                _logService.LogMessage("A skeleton appear from behind the bushes!");
             else if (_locationService.isAtLocation(location.getLatitude(), location.getLongitude(),  55.6967093, 12.4173003))
-                Log("You found a glowing necklace on the path!");
+                _logService.LogMessage("You found a glowing necklace on the path!");
 
             else if (_locationService.isAtLocation(location.getLatitude(), location.getLongitude(),  55.6967093, 12.4173003)) {
-                Log("You found some lumber, now please go and give it to the innkeeper, hurry!");
+                _logService.LogMessage("You found some lumber, now please go and give it to the innkeeper, hurry!");
                 int resID = getResources().getIdentifier("lumber", "drawable", getPackageName());
                 mainImage.setImageResource(resID);
             }
 
             else if (_locationService.isAtLocation(location.getLatitude(), location.getLongitude(),  55.6967093, 12.4173003)) {
-                Log("The innkeeper greets you, thank you my friend that will come in handy!");
+                _logService.LogMessage("The innkeeper greets you, thank you my friend that will come in handy!");
                 int resID = getResources().getIdentifier("innkeeper", "drawable", getPackageName());
                 mainImage.setImageResource(resID);
             }
             else {
-                Log("Nothing happens at this location!");
+                _logService.LogMessage("Nothing happens at this location!");
             }
         }
     }
 
-    private static SimpleDateFormat _sdf = new SimpleDateFormat("HH:mm:ss.SSS");
+    /*private static SimpleDateFormat _sdf = new SimpleDateFormat("HH:mm:ss.SSS");
     //private static Calendar _cal = new GregorianCalendar();
-    public void Log(String message) {
+    public void _logService.LogMessage(String message) {
         String now = _sdf.format(new Date());
         _logView.append(now);_logView.append(" ");_logView.append(message);_logView.append("\r\n");
         _logScrollView.computeScroll();
@@ -167,7 +167,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
         }
         //logView.setText(message);
         //animText(logView);
-    }
+    }*/
 
     public void animText(TextView textView) {
         ObjectAnimator anim = ObjectAnimator.ofInt(textView, "backgroundColor", Color.WHITE, Color.RED, Color.WHITE);
@@ -180,22 +180,22 @@ public class MainActivity extends AppCompatActivity implements Observer {
 
     public void writeToFile(String filename, String contents) {
         FileOutputStream outputStream = null;
-        Log("Writing to file...");
+        _logService.LogMessage("Writing to file...");
         try {
             outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
             outputStream.write(contents.getBytes());
             outputStream.close();
-            Log("Done writing file!");
+            _logService.LogMessage("Done writing file!");
         } catch (Exception e) {
             e.printStackTrace();
-            Log(e.getMessage());
+            _logService.LogMessage(e.getMessage());
         }
         finally{
             if(outputStream != null) {
                 try {
                     outputStream.close();
                 } catch (IOException e) {
-                    Log(e.getMessage());
+                    _logService.LogMessage(e.getMessage());
                 }
             }
         }
