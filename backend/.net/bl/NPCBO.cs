@@ -13,8 +13,8 @@ public class NPCBO
         Console.WriteLine($"action=[{action}]");
         switch(action) {
             case ActionTypeEnum.Move: return new MoveActionBO();
-            case ActionTypeEnum.AttackOpponent: return new AttackActionBO();
-            case ActionTypeEnum.AttackCastle: return new AttackCastleBO();
+            case ActionTypeEnum.AttackOpponent: return new AttackOpponentActionBO();
+            case ActionTypeEnum.AttackCastle: return new AttackCastleActionBO();
             default: return new ConfusedActionBO();
         }
     }

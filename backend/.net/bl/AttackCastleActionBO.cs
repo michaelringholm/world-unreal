@@ -1,10 +1,10 @@
 namespace com.opusmagus.wu.bl
 {
-    internal class AttackCastleBO : ActionBO
+    internal class AttackCastleActionBO : ActionBO
     {
         public override void Execute(dtl.NPCDTO npc)
         {
-            throw new NotImplementedException();
+            Console.WriteLine("Attacking enemy castle..");
         }
     }
 }

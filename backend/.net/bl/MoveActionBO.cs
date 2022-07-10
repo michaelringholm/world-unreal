@@ -4,7 +4,7 @@ namespace com.opusmagus.wu.bl
     {
         public override void Execute(dtl.NPCDTO npc)
         {
-            throw new NotImplementedException();
+            Console.WriteLine("Moving somewhere..");
         }
     }
 }
