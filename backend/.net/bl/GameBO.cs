@@ -20,6 +20,7 @@ public class GameBO {
     {
         foreach(var npc in npcs) {
             var action=npcBO.TakeAction(npc);
+            action.Execute(npc);            
             Console.WriteLine($"took action=[{action}]");
         }
     }
