@@ -10,7 +10,8 @@ public class Game
     {
         Console.WriteLine("started...");
         var map = BuildMap();
-        Tick(map);
+		var roundsToSimulate = 10;
+		for(int i=0;i<roundsToSimulate;i++)	Tick(map);
         Console.WriteLine("ended.");
     }
 
@@ -122,6 +123,8 @@ public class WarriorMoveNorth : GameAction<Warrior>
 
     override public void AdjustBias(Map map, Warrior warrior)
     {
+		//warrior.pos.x;
+		//map.mapObjects.Where(mo=>mo.pos.x);
         bias.biasFactor = 100;
     }
 }
@@ -328,8 +331,8 @@ public class Position
 
 public class Map
 {
-    private MapObject[,] map;
-    private List<MapObject> mapObjects;
+    public MapObject[,] map;
+    public List<MapObject> mapObjects;
 
     public Map(int xTiles, int yTiles)
     {
