@@ -3,14 +3,25 @@ using com.opusmagus.wu.dtl;
 namespace com.opusmagus.wu.bl;
 
 public class GameBO {
-    private MapBO mapBO;
-    private NPCBO npcBO;
+    private MapBO? mapBO;
+    private NPCBO? npcBO;
+    private BuildingBO buildingBO;
+    private MapDTO map;
     private List<NPCDTO> npcs;
+    private List<BuildingDTO> buildings;
 
-    public void StartNewGame() {
+    public GameBO() {
         mapBO = new MapBO();
         npcBO = new NPCBO();
-        npcs = mapBO.SpawnNPCs();
+        buildingBO = new BuildingBO();
+        npcs=new List<NPCDTO>();
+        buildings=new List<BuildingDTO>();
+    }
+
+    public void StartNewGame() {
+        map=mapBO.CreateMap();
+        npcBO.SpawnNPCs(map);
+        buildingBO.SpawnBuildings(map);
 
         for(var i=0;i<10; i++)
             Tick();        
@@ -18,10 +29,7 @@ public class GameBO {
 
     private void Tick()
     {
-        foreach(var npc in npcs) {
-            var action=npcBO.TakeAction(npc);
-            action.Execute(npc);            
-            Console.WriteLine($"took action=[{action}]");
-        }
+        npcBO.Tick(map);
+        buildingBO.Tick(map);                    
     }
 }

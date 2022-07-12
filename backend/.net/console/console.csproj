@@ -3,6 +3,7 @@
   <ItemGroup>
     <ProjectReference Include="..\bl\bl.csproj" />
     <ProjectReference Include="..\dtl\dtl.csproj" />
+    <ProjectReference Include="..\simple\simple.csproj" />
   </ItemGroup>
 
   <PropertyGroup>
