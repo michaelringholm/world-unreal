@@ -28,11 +28,13 @@ public class Game
         //var human = new Warrior { pos = new Position { x = 30, y = 7 }, label = "Human", faction = Faction.FactionEnum.Human };
         var human = new Warrior { pos = new Position { x = 20, y = 7 }, label = "Human", faction = Faction.FactionEnum.Human };
         var human2 = new Warrior { pos = new Position { x = 5, y = 7 }, label = "Human 2", faction = Faction.FactionEnum.Human };
+        var human3 = new Warrior { pos = new Position { x = 4, y = 5 }, label = "Human 3", faction = Faction.FactionEnum.Human };
         var humanCastle = new Castle { pos = new Position { x = 36, y = 9 }, label = "Human Castle", faction = Faction.FactionEnum.Human };
         AddToMap(map, orc);
         AddToMap(map, orcCastle);
         AddToMap(map, human);
         AddToMap(map, human2);
+        AddToMap(map, human3);
         AddToMap(map, humanCastle);
         return map;
     }
@@ -104,75 +106,87 @@ public class WarriorAttackBuilding : GameAction<Warrior>
     }
 }
 
-public class WarriorMoveAnywhere : GameAction<Warrior>
+public class WarriorMoveAnywhere : WarriorMove
 {
     override public void Act(Warrior warrior)
     {
         Console.WriteLine($"moving west...");
     }
 
-    override public void AdjustBias(Map map, Warrior warrior)
-    {
-        bias.biasFactor = 100;
+    override public void AdjustBias(Map map, Warrior warrior) {
+        var rand=new Random();
+        var moveDirectionIndex=rand.Next(0,3);
+        var direction=(Direction.DirectionEnum)moveDirectionIndex;
+        base.AdjustMoveBias(map, warrior, direction);
     }
 }
 
-public class WarriorMoveNorth : GameAction<Warrior>
+
+public abstract class WarriorMove : GameAction<Warrior> {
+    public void AdjustMoveBias(Map map, Warrior warrior, Direction.DirectionEnum testedDirection)
+    {
+		//warrior.pos.x;
+		//map.mapObjects.Where(mo=>mo.pos.x);
+
+        var enemyMapObj=map.mapObjects.Where(mo=>mo.faction!=warrior.faction).MinBy(mo=>Distance.Calc(warrior.pos.x, mo.pos.x, warrior.pos.y, mo.pos.y));
+        //var enemyMapObjs=map.mapObjects.Where(mo=>mo.faction!=warrior.faction);
+        //foreach(var enemyMapObj in enemyMapObjs) {
+            //}
+        if(enemyMapObj!=null) {
+            var distance=Distance.Calc(warrior.pos.x, enemyMapObj.pos.x, warrior.pos.y, enemyMapObj.pos.y);
+            var adjustedDistance=distance-enemyMapObj.proximity;
+            if(adjustedDistance<0) adjustedDistance=0; // Not sure that this can happen, investigate...
+            var direction=Direction.Calc(warrior.pos.x, enemyMapObj.pos.x, warrior.pos.y, enemyMapObj.pos.y, distance);
+            Console.WriteLine($"distance between {warrior.label} and  {enemyMapObj.label} are {distance}(adjusted={adjustedDistance}) and most significant direction is {direction.significantHeading.ToString()} following vector x={direction.x},y={direction.y}");                        
+            if(direction.significantHeading==testedDirection) bias.biasFactor=1000; else bias.biasFactor=1;
+        }
+    }
+}
+public class WarriorMoveNorth : WarriorMove
 {
     override public void Act(Warrior warrior)
     {
         Console.WriteLine($"moving north...");
     }
 
-    override public void AdjustBias(Map map, Warrior warrior)
-    {
-		//warrior.pos.x;
-		//map.mapObjects.Where(mo=>mo.pos.x);
-        var enemyMapObjs=map.mapObjects.Where(mo=>mo.faction!=warrior.faction);
-        foreach(var enemyMapObj in enemyMapObjs) {
-            var distance=new Distance().Calc(warrior.pos.x, enemyMapObj.pos.x, warrior.pos.y, enemyMapObj.pos.y);
-            Console.WriteLine($"distance between {warrior.label} and  {enemyMapObj.label} are {distance}");
-        }
-        bias.biasFactor = 100;
+    override public void AdjustBias(Map map, Warrior warrior) {
+        base.AdjustMoveBias(map, warrior, Direction.DirectionEnum.N);
     }
 }
 
-public class WarriorMoveSouth : GameAction<Warrior>
+public class WarriorMoveSouth : WarriorMove
 {
     override public void Act(Warrior warrior)
     {
         Console.WriteLine($"moving south...");
     }
 
-    override public void AdjustBias(Map map, Warrior warrior)
-    {
-        bias.biasFactor = 100;
+        override public void AdjustBias(Map map, Warrior warrior) {
+        base.AdjustMoveBias(map, warrior, Direction.DirectionEnum.S);
     }
 }
 
-public class WarriorMoveEast : GameAction<Warrior>
+public class WarriorMoveEast : WarriorMove
 {
     override public void Act(Warrior warrior)
     {
         Console.WriteLine($"moving east...");
     }
 
-    override public void AdjustBias(Map map, Warrior warrior)
-    {
-        bias.biasFactor = 100;
+        override public void AdjustBias(Map map, Warrior warrior) {
+        base.AdjustMoveBias(map, warrior, Direction.DirectionEnum.E);
     }
 }
 
-public class WarriorMoveWest : GameAction<Warrior>
+public class WarriorMoveWest : WarriorMove
 {
     override public void Act(Warrior warrior)
     {
         Console.WriteLine($"moving west...");
     }
 
-    override public void AdjustBias(Map map, Warrior warrior)
-    {
-        bias.biasFactor = 100;
+    override public void AdjustBias(Map map, Warrior warrior) {
+        base.AdjustMoveBias(map, warrior, Direction.DirectionEnum.W);
     }
 }
 
@@ -264,6 +278,7 @@ public class Castle : Building<Castle>
 {
     public Castle()
     {
+        proximity=3;
         AddAction(new CastleAttackNPC());
     }
 
