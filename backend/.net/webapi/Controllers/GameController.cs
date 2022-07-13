@@ -23,6 +23,7 @@ public class GameController : ControllerBase
 		var roundsToSimulate = 1;
 		//for(int i=0;i<roundsToSimulate;i++)	game.Tick(game.Map);
         Console.WriteLine("ended.");
-        return Ok(new {a="hhh",b="ccc"});
+        //return Ok(new {a="hhh",b="ccc"});
+        return Ok(game.Map.mapObjects);
     }
 }

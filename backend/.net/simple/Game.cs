@@ -49,53 +49,12 @@ public class Game
 
 
 
-public class WarriorMoveNorth : WarriorMove
-{
-    override public void Act(Warrior warrior)
-    {
-        Console.WriteLine($"moving north...");
-    }
 
-    override public void AdjustBias(Map map, Warrior warrior) {
-        base.AdjustMoveBias(map, warrior, Direction.DirectionEnum.N);
-    }
-}
 
-public class WarriorMoveSouth : WarriorMove
-{
-    override public void Act(Warrior warrior)
-    {
-        Console.WriteLine($"moving south...");
-    }
 
-        override public void AdjustBias(Map map, Warrior warrior) {
-        base.AdjustMoveBias(map, warrior, Direction.DirectionEnum.S);
-    }
-}
 
-public class WarriorMoveEast : WarriorMove
-{
-    override public void Act(Warrior warrior)
-    {
-        Console.WriteLine($"moving east...");
-    }
 
-        override public void AdjustBias(Map map, Warrior warrior) {
-        base.AdjustMoveBias(map, warrior, Direction.DirectionEnum.E);
-    }
-}
 
-public class WarriorMoveWest : WarriorMove
-{
-    override public void Act(Warrior warrior)
-    {
-        Console.WriteLine($"moving west...");
-    }
-
-    override public void AdjustBias(Map map, Warrior warrior) {
-        base.AdjustMoveBias(map, warrior, Direction.DirectionEnum.W);
-    }
-}
 
 
 

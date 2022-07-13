@@ -9,6 +9,8 @@ public abstract class NPC<T> : MapObject
         //actions.Add(new IdleAction());
     }
 
+    public GameAction<T>? seletedAction { get; private set; }
+
     public void AddAction(GameAction<T> action)
     {
         actions.Add(action);
@@ -30,7 +32,7 @@ public abstract class NPC<T> : MapObject
         var rand = new Random();
         var biasRangeIndexChoice = rand.Next(0, biasFactorSum);
         Console.WriteLine($"biasRangeIndexChoice=[{biasRangeIndexChoice}]");
-        var seletedAction = actions.Where(a => a.bias.currentBiasRangeStart <= biasRangeIndexChoice && a.bias.currentBiasRangeEnd >= biasRangeIndexChoice).FirstOrDefault();
+        seletedAction = actions.Where(a => a.bias.currentBiasRangeStart <= biasRangeIndexChoice && a.bias.currentBiasRangeEnd >= biasRangeIndexChoice).FirstOrDefault();
         //var seletedAction=actions.Where( a=> a.currentBiasRangeStart<=biasRangeIndexChoice).Where(a=>a.currentBiasRangeEnd>=1).FirstOrDefault(); //.Where(a=>a.currentBiasRangeEnd>=biasRangeIndexChoice).FirstOrDefault(); // && a.currentBiasRangeEnd>=biasRangeIndexChoice).FirstOrDefault();
         //var seletedAction=actions.Where( a=> a.bias.currentBiasRangeStart>=1).Count();
         Console.WriteLine($"seletedAction=[{seletedAction}]");

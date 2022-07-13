@@ -1,8 +1,8 @@
 namespace com.opusmagus.wu.simple;
 public class Map
 {
-    public MapObject[,] map;
-    public List<MapObject> mapObjects;
+    public MapObject[,] map { get; set; }
+    public List<MapObject> mapObjects { get; set; }
 
     public Map(int xTiles, int yTiles)
     {
