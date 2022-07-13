@@ -1,7 +1,7 @@
 namespace com.opusmagus.wu.simple;
 public class IdleAction : GameAction<Object>
 {
-    override public void Act(Object obj)
+    override public void Act(Map map, Object obj)
     {
         Console.WriteLine($"staying idle...");
     }

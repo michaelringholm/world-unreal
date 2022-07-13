@@ -5,6 +5,7 @@ $(function() {
 });
 
 var context={};
+var canvas={};
 const mapObjectImageSize=48;
 const horizontalCells=50;
 const verticalCells=50;
@@ -15,7 +16,7 @@ function getMapData() {
 }
 
 function drawCanvas() {
-    var canvas = document.getElementById("myCanvas");    
+    canvas = document.getElementById("myCanvas");    
     canvas.width=mapObjectImageSize*horizontalCells;
     canvas.height=mapObjectImageSize*verticalCells;
     context = canvas.getContext("2d");
@@ -55,6 +56,7 @@ function drawMap(mapObjects) {
     var humanCastleImg = $("#castle-icon-48")[0];
     var orcCastleImg = $("#sand-castle-icon-48")[0];
     var unknownImg = $("#sand-castle-icon-48")[0];
+    context.clearRect(0, 0, canvas.width, canvas.height);
     //const img = new Image();
     //img.src = "https://cdna.artstation.com/p/assets/images/images/026/799/902/large/chairat-toraya-5-1.jpg?1589771227";
     //for(var mapObject in mapObjects) {

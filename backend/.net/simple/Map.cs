@@ -3,9 +3,13 @@ public class Map
 {
     public MapObject[,] map { get; set; }
     public List<MapObject> mapObjects { get; set; }
+    public int xTiles { get; set; }
+    public int yTiles { get; set; }
 
     public Map(int xTiles, int yTiles)
     {
+        this.xTiles = xTiles;
+        this.yTiles = yTiles;
         map = new MapObject[xTiles, yTiles];
         mapObjects = new List<MapObject>();
     }

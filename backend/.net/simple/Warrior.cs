@@ -24,6 +24,6 @@ public class Warrior : NPC<Warrior>
     {
         AdjustBiases(map);
         var action = Decide();
-        action.Act(this);
+        action.Act(map, this);
     }
 }

@@ -1,7 +1,7 @@
 namespace com.opusmagus.wu.simple;
 public class WarriorAttackNPC : GameAction<Warrior>
 {
-    override public void Act(Warrior warrior)
+    override public void Act(Map map, Warrior warrior)
     {
         Console.WriteLine($"attacking npc...");
     }

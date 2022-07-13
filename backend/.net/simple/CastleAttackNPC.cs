@@ -1,7 +1,7 @@
 namespace com.opusmagus.wu.simple;
 public class CastleAttackNPC : GameAction<Castle>
 {
-    override public void Act(Castle obj)
+    override public void Act(Map map, Castle obj)
     {
     }
 

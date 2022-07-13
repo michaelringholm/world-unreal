@@ -1,11 +1,12 @@
 namespace com.opusmagus.wu.simple;
 public class WarriorMoveNorth : WarriorMove
 {
-    override public void Act(Warrior warrior)
+    override public void Act(Map map, Warrior warrior)
     {
         Console.WriteLine($"moving north...");
         // Need to handle map boundaries
-        warrior.pos.y+=1;
+        if(warrior.pos.y==map.yTiles) Console.WriteLine($"out of bounds, doing nothing...");
+        else warrior.pos.y+=1;
     }
 
     override public void AdjustBias(Map map, Warrior warrior) {

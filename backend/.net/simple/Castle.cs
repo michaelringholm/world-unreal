@@ -11,7 +11,7 @@ public class Castle : Building<Castle>
     {
         AdjustBiases(map);
         var action = base.Decide();
-        action.Act(this);
+        action.Act(map, this);
     }
 
 	protected void AdjustBiases(Map map)
