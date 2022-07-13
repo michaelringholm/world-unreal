@@ -5,7 +5,7 @@ public class WarriorMoveNorth : WarriorMove
     {
         Console.WriteLine($"moving north...");
         // Need to handle map boundaries
-        if(warrior.pos.y==map.yTiles) Console.WriteLine($"out of bounds, doing nothing...");
+        if(warrior.pos.y==map.yTiles-1) Console.WriteLine($"out of bounds, doing nothing...");
         else warrior.pos.y+=1;
     }
 

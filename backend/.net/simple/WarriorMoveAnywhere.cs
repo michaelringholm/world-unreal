@@ -6,11 +6,12 @@ public class WarriorMoveAnywhere : WarriorMove
     {        
         Console.WriteLine($"moving anywhere...");
         var rand=new Random();
-        var moveDirectionIndex=rand.Next(0,3);
+        var moveDirectionIndex=rand.Next(0,4);
         var direction=(Direction.DirectionEnum)moveDirectionIndex;
+        Console.WriteLine($"move anywhere resulting in trying to move towards {direction.ToString()}...");
         // Need to handle map boundaries
         if(direction==Direction.DirectionEnum.E) {
-            if(warrior.pos.x==map.xTiles) Console.WriteLine($"out of bounds, doing nothing...");
+            if(warrior.pos.x==map.xTiles-1) Console.WriteLine($"out of bounds, doing nothing...");
             else warrior.pos.x+=1;
         }
         if(direction==Direction.DirectionEnum.W) {
@@ -18,14 +19,13 @@ public class WarriorMoveAnywhere : WarriorMove
             else warrior.pos.x-=1;
         }
         if(direction==Direction.DirectionEnum.N) {
-            if(warrior.pos.y==map.yTiles) Console.WriteLine($"out of bounds, doing nothing...");
+            if(warrior.pos.y==map.yTiles-1) Console.WriteLine($"out of bounds, doing nothing...");
             else warrior.pos.y+=1;
         }
         if(direction==Direction.DirectionEnum.S) {
             if(warrior.pos.y==0) Console.WriteLine($"out of bounds, doing nothing...");
             else warrior.pos.y-=1;
         }
-        else warrior.pos.x+=1;
     }
 
     override public void AdjustBias(Map map, Warrior warrior) {

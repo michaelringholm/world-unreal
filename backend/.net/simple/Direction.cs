@@ -1,7 +1,7 @@
 namespace com.opusmagus.wu.simple;
 public class Direction {
 
-    public enum DirectionEnum{None,N,S,E,W};
+    public enum DirectionEnum{None=-1,N=0,S=1,E=2,W=3};
     public double x { get; set; }
     public double y { get; set; }
     public DirectionEnum significantHeading { get; set; }
