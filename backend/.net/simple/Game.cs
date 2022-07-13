@@ -10,7 +10,7 @@ public class Game
     {
         Console.WriteLine("started...");
         var map = BuildMap();
-		var roundsToSimulate = 10;
+		var roundsToSimulate = 1;
 		for(int i=0;i<roundsToSimulate;i++)	Tick(map);
         Console.WriteLine("ended.");
     }
@@ -125,6 +125,11 @@ public class WarriorMoveNorth : GameAction<Warrior>
     {
 		//warrior.pos.x;
 		//map.mapObjects.Where(mo=>mo.pos.x);
+        var enemyMapObjs=map.mapObjects.Where(mo=>mo.faction!=warrior.faction);
+        foreach(var enemyMapObj in enemyMapObjs) {
+            var distance=new Distance().Calc(warrior.pos.x, enemyMapObj.pos.x, warrior.pos.y, enemyMapObj.pos.y);
+            Console.WriteLine($"distance between {warrior.label} and  {enemyMapObj.label} are {distance}");
+        }
         bias.biasFactor = 100;
     }
 }
