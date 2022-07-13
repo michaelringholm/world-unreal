@@ -72,11 +72,12 @@ public class IdleAction : GameAction<Object>
 {
     override public void Act(Object obj)
     {
-        Console.WriteLine($"moving west...");
+        Console.WriteLine($"staying idle...");
     }
 
     override public void AdjustBias(Map map, Object actionableObject)
     {
+        bias.biasFactor = 0;
     }
 }
 
@@ -89,7 +90,7 @@ public class WarriorAttackNPC : GameAction<Warrior>
 
     override public void AdjustBias(Map map, Warrior warrior)
     {
-        bias.biasFactor = 100;
+        bias.biasFactor = 0;
     }
 }
 
@@ -97,12 +98,12 @@ public class WarriorAttackBuilding : GameAction<Warrior>
 {
     override public void Act(Warrior warrior)
     {
-        Console.WriteLine($"moving west...");
+        Console.WriteLine($"attacking building...");
     }
 
     override public void AdjustBias(Map map, Warrior warrior)
     {
-        bias.biasFactor = 100;
+        bias.biasFactor = 0;
     }
 }
 
@@ -110,14 +111,15 @@ public class WarriorMoveAnywhere : WarriorMove
 {
     override public void Act(Warrior warrior)
     {
-        Console.WriteLine($"moving west...");
+        Console.WriteLine($"moving anywhere...");
     }
 
     override public void AdjustBias(Map map, Warrior warrior) {
+        var minAdjustedDistance=map.mapObjects.Where(mo=>mo.faction!=warrior.faction).Min(mo=>(Distance.Calc(warrior.pos.x, mo.pos.x, warrior.pos.y, mo.pos.y)-mo.proximity));
+        if(minAdjustedDistance>1) bias.biasFactor=1000; else bias.biasFactor=0;
         var rand=new Random();
         var moveDirectionIndex=rand.Next(0,3);
         var direction=(Direction.DirectionEnum)moveDirectionIndex;
-        base.AdjustMoveBias(map, warrior, direction);
     }
 }
 
@@ -137,8 +139,9 @@ public abstract class WarriorMove : GameAction<Warrior> {
             var adjustedDistance=distance-enemyMapObj.proximity;
             if(adjustedDistance<0) adjustedDistance=0; // Not sure that this can happen, investigate...
             var direction=Direction.Calc(warrior.pos.x, enemyMapObj.pos.x, warrior.pos.y, enemyMapObj.pos.y, distance);
-            Console.WriteLine($"distance between {warrior.label} and  {enemyMapObj.label} are {distance}(adjusted={adjustedDistance}) and most significant direction is {direction.significantHeading.ToString()} following vector x={direction.x},y={direction.y}");                        
-            if(direction.significantHeading==testedDirection) bias.biasFactor=1000; else bias.biasFactor=1;
+            Console.WriteLine($"distance between {warrior.label} and  {enemyMapObj.label} are {distance}(adjusted={adjustedDistance}) and most significant direction is {direction.significantHeading.ToString()} following vector x={direction.x},y={direction.y}");
+            if(adjustedDistance>1) bias.biasFactor=1; else
+            if(direction.significantHeading==testedDirection) bias.biasFactor=1000; else bias.biasFactor=0;
         }
     }
 }
@@ -250,7 +253,7 @@ public abstract class NPC<T> : MapObject
         {
             action.bias.currentBiasRangeStart = currentBiasRangeStart;
             currentBiasRangeStart += action.bias.biasFactor;
-            //Console.WriteLine($"[{action.GetType().Name}] bias range=[{action.bias.currentBiasRangeStart},{action.bias.currentBiasRangeEnd}]");
+            Console.WriteLine($"[{action.GetType().Name}] bias range=[{action.bias.currentBiasRangeStart},{action.bias.currentBiasRangeEnd}]");
         }
         var rand = new Random();
         var biasRangeIndexChoice = rand.Next(0, biasFactorSum);
@@ -259,7 +262,7 @@ public abstract class NPC<T> : MapObject
         //var seletedAction=actions.Where( a=> a.currentBiasRangeStart<=biasRangeIndexChoice).Where(a=>a.currentBiasRangeEnd>=1).FirstOrDefault(); //.Where(a=>a.currentBiasRangeEnd>=biasRangeIndexChoice).FirstOrDefault(); // && a.currentBiasRangeEnd>=biasRangeIndexChoice).FirstOrDefault();
         //var seletedAction=actions.Where( a=> a.bias.currentBiasRangeStart>=1).Count();
         Console.WriteLine($"seletedAction=[{seletedAction}]");
-        return actions.First(); // Use random with biases
+        return seletedAction; // Use random with biases
     }
 }
 
@@ -271,6 +274,7 @@ public class CastleAttackNPC : GameAction<Castle>
 
     override public void AdjustBias(Map map, Castle obj)
     {
+        bias.biasFactor = 0;
     }
 }
 
@@ -333,7 +337,7 @@ public abstract class Building<T> : MapObject
         //var seletedAction=actions.Where( a=> a.currentBiasRangeStart<=biasRangeIndexChoice).Where(a=>a.currentBiasRangeEnd>=1).FirstOrDefault(); //.Where(a=>a.currentBiasRangeEnd>=biasRangeIndexChoice).FirstOrDefault(); // && a.currentBiasRangeEnd>=biasRangeIndexChoice).FirstOrDefault();
         //var seletedAction=actions.Where( a=> a.bias.currentBiasRangeStart>=1).Count();
         Console.WriteLine($"seletedAction=[{seletedAction}]");
-        return actions.First(); // Use random with biases
+        if(seletedAction!=null) return seletedAction; else return null;
     }
 }
 
