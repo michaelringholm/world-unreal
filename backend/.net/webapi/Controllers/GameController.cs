@@ -14,7 +14,7 @@ public class GameController : ControllerBase
         _logger = logger;
     }
 
-    [HttpGet(Name = "GetMap")]
+    [HttpPost(Name = "GetMap")]
     public ObjectResult Get()
     {
          Console.WriteLine("started...");
@@ -24,6 +24,17 @@ public class GameController : ControllerBase
 		//for(int i=0;i<roundsToSimulate;i++)	game.Tick(game.Map);
         Console.WriteLine("ended.");
         //return Ok(new {a="hhh",b="ccc"});
+        Response.Headers.AccessControlAllowOrigin="*";
+        Response.Headers.AccessControlAllowHeaders="*";
         return Ok(game.Map.mapObjects);
+    }
+
+    [HttpOptions(Name = "GetMap")]
+    public ActionResult GetMapOptions()
+    {
+        //var ok=Response;
+        Response.Headers.AccessControlAllowOrigin="*";
+        Response.Headers.AccessControlAllowHeaders="*";
+       return Ok();
     }
 }

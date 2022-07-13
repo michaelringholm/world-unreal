@@ -1,19 +1,30 @@
 $(function() {
+    drawCanvas();
+    getMapData();
     drawMap();
 });
+var context={};
+const mapObjectImageSize=48;
+const horizontalCells=50;
+const verticalCells=50;
 
-function drawMap() {
-    log("drawMap()");
-    var canvas = document.getElementById("myCanvas");
-    var mapObjectImageSize=48;
-    var horizontalCells=50;
-    var verticalCells=50;
+function getMapData() {
+    post("https://localhost:7243/Game",{}, drawMap);
+}
+
+function drawCanvas() {
+    var canvas = document.getElementById("myCanvas");    
     canvas.width=mapObjectImageSize*horizontalCells;
     canvas.height=mapObjectImageSize*verticalCells;
-    var context = canvas.getContext("2d");
+    context = canvas.getContext("2d");
     context.webkitImageSmoothingEnabled = false;
     context.mozImageSmoothingEnabled = false;
     context.imageSmoothingEnabled = false;
+}
+
+function drawMap(data) {
+    logDebug("drawMap()");
+    
     //var img = document.getElementById("orc1");
     var img = $("#orc-icon-48")[0];
     //const img = new Image();
@@ -24,3 +35,5 @@ function drawMap() {
     
     //octx.drawImage(img, 0, 0, oc.width, oc.height);
 }
+
+

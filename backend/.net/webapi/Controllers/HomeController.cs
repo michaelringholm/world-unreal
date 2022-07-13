@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace webapi.Controllers;
 
 [Controller]
-[Route("/")]
+[Route("")]
 public class HomeController : ControllerBase
 {
     private readonly ILogger<HomeController> _logger;
@@ -14,8 +14,8 @@ public class HomeController : ControllerBase
     }
 
     [HttpGet]
-    public void Get()
+    public ActionResult Index()
     {
-        Redirect("/Swagger");
+        return Redirect("/Swagger");
     }
 }
