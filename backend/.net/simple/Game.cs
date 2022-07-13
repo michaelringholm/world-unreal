@@ -6,12 +6,13 @@ namespace com.opusmagus.wu.simple;
 
 public class Game
 {
+    public Map Map { get; set; }
     public void StartGame()
     {
         Console.WriteLine("started...");
-        var map = BuildMap();
+        Map=BuildMap();
 		var roundsToSimulate = 1;
-		for(int i=0;i<roundsToSimulate;i++)	Tick(map);
+		for(int i=0;i<roundsToSimulate;i++)	Tick(Map);
         Console.WriteLine("ended.");
     }
 
@@ -22,7 +23,7 @@ public class Game
 
     public Map BuildMap()
     {
-        Map map = new Map(50, 50);
+        var map = new Map(50, 50);
         var orc = new Warrior { pos = new Position { x = 8, y = 5 }, label = "Orc", faction = Faction.FactionEnum.Orc };
         var orcCastle = new Castle { pos = new Position { x = 2, y = 3 }, label = "Orc Castle", faction = Faction.FactionEnum.Orc };
         //var human = new Warrior { pos = new Position { x = 30, y = 7 }, label = "Human", faction = Faction.FactionEnum.Human };
@@ -46,105 +47,8 @@ public class Game
     }
 }
 
-public class Bias
-{
-    public int biasFactor;
-    public int currentBiasRangeStart = 0;
-
-    public Bias(int biasFactor)
-    {
-        this.biasFactor = biasFactor;
-    }
-    public int currentBiasRangeEnd
-    {
-        get { return currentBiasRangeStart + biasFactor; }
-    }
-}
-
-public abstract class GameAction<T>
-{
-    public Bias bias = new Bias(1);
-    public abstract void Act(T actionable);
-    public abstract void AdjustBias(Map map, T actionableObject);
-}
-
-public class IdleAction : GameAction<Object>
-{
-    override public void Act(Object obj)
-    {
-        Console.WriteLine($"staying idle...");
-    }
-
-    override public void AdjustBias(Map map, Object actionableObject)
-    {
-        bias.biasFactor = 0;
-    }
-}
-
-public class WarriorAttackNPC : GameAction<Warrior>
-{
-    override public void Act(Warrior warrior)
-    {
-        Console.WriteLine($"attacking npc...");
-    }
-
-    override public void AdjustBias(Map map, Warrior warrior)
-    {
-        bias.biasFactor = 0;
-    }
-}
-
-public class WarriorAttackBuilding : GameAction<Warrior>
-{
-    override public void Act(Warrior warrior)
-    {
-        Console.WriteLine($"attacking building...");
-    }
-
-    override public void AdjustBias(Map map, Warrior warrior)
-    {
-        bias.biasFactor = 0;
-    }
-}
-
-public class WarriorMoveAnywhere : WarriorMove
-{
-    override public void Act(Warrior warrior)
-    {
-        Console.WriteLine($"moving anywhere...");
-    }
-
-    override public void AdjustBias(Map map, Warrior warrior) {
-        var minAdjustedDistance=map.mapObjects.Where(mo=>mo.faction!=warrior.faction).Min(mo=>(Distance.Calc(warrior.pos.x, mo.pos.x, warrior.pos.y, mo.pos.y)-mo.proximity));
-        if(minAdjustedDistance>1) bias.biasFactor=1000; else bias.biasFactor=0;
-        var rand=new Random();
-        var moveDirectionIndex=rand.Next(0,3);
-        var direction=(Direction.DirectionEnum)moveDirectionIndex;
-    }
-}
 
 
-public abstract class WarriorMove : GameAction<Warrior> {
-    public void AdjustMoveBias(Map map, Warrior warrior, Direction.DirectionEnum testedDirection)
-    {
-		//warrior.pos.x;
-		//map.mapObjects.Where(mo=>mo.pos.x);
-
-        var enemyMapObj=map.mapObjects.Where(mo=>mo.faction!=warrior.faction).MinBy(mo=>Distance.Calc(warrior.pos.x, mo.pos.x, warrior.pos.y, mo.pos.y));
-        //var enemyMapObjs=map.mapObjects.Where(mo=>mo.faction!=warrior.faction);
-        //foreach(var enemyMapObj in enemyMapObjs) {
-            //}
-        if(enemyMapObj!=null) {
-            var distance=Distance.Calc(warrior.pos.x, enemyMapObj.pos.x, warrior.pos.y, enemyMapObj.pos.y);
-            var adjustedDistance=distance-enemyMapObj.proximity;
-            if(adjustedDistance<0) adjustedDistance=0; // Not sure that this can happen, investigate...
-            var direction=Direction.Calc(warrior.pos.x, enemyMapObj.pos.x, warrior.pos.y, enemyMapObj.pos.y, distance);
-            Console.WriteLine($"distance between {warrior.label} and  {enemyMapObj.label} are {distance}(adjusted={adjustedDistance}) and most significant direction is {direction.significantHeading.ToString()} following vector x={direction.x},y={direction.y}");
-            if(adjustedDistance>1) bias.biasFactor=1; else
-            if(direction.significantHeading==testedDirection) bias.biasFactor=1000; else bias.biasFactor=0;
-        }
-    }
-}
 public class WarriorMoveNorth : WarriorMove
 {
     override public void Act(Warrior warrior)
@@ -193,190 +97,20 @@ public class WarriorMoveWest : WarriorMove
     }
 }
 
-public abstract class Faction
-{
-    public enum FactionEnum { Neutral, Human, Orc };
-}
 
-public class Warrior : NPC<Warrior>
-{
-    public Warrior()
-    {
-        AddAction(new WarriorMoveAnywhere());
-        AddAction(new WarriorMoveNorth());
-        AddAction(new WarriorMoveSouth());
-        AddAction(new WarriorMoveEast());
-        AddAction(new WarriorMoveWest());
-        AddAction(new WarriorAttackNPC());
-        AddAction(new WarriorAttackBuilding());
-    }
 
-	private void AdjustBiases(Map map)
-    {
-        foreach (var action in actions)
-        {
-            action.AdjustBias(map, this);
-        }
-    }
 
-	override public void HandleTick(Map map)
-    {
-        AdjustBiases(map);
-        var action = Decide();
-        action.Act(this);
-    }
-}
 
-public abstract class NPC<T> : MapObject
-{
-    public List<GameAction<T>> actions;
 
-    public NPC()
-    {
-        actions = new List<GameAction<T>>();
-        //actions.Add(new IdleAction());
-    }
 
-    public void AddAction(GameAction<T> action)
-    {
-        actions.Add(action);
-    }
 
-    protected GameAction<T> Decide()
-    {
-        var biasFactorSum = actions.Sum(a => a.bias.biasFactor);
-        var actionCount = actions.Count;
-        Console.WriteLine($"sum of all biases for [{label}] are=[{biasFactorSum}]");
-        Console.WriteLine($"number of actions for [{label}] are=[{actions.Count}]");
-        var currentBiasRangeStart = 0;
-        foreach (var action in actions)
-        {
-            action.bias.currentBiasRangeStart = currentBiasRangeStart;
-            currentBiasRangeStart += action.bias.biasFactor;
-            Console.WriteLine($"[{action.GetType().Name}] bias range=[{action.bias.currentBiasRangeStart},{action.bias.currentBiasRangeEnd}]");
-        }
-        var rand = new Random();
-        var biasRangeIndexChoice = rand.Next(0, biasFactorSum);
-        Console.WriteLine($"biasRangeIndexChoice=[{biasRangeIndexChoice}]");
-        var seletedAction = actions.Where(a => a.bias.currentBiasRangeStart <= biasRangeIndexChoice && a.bias.currentBiasRangeEnd >= biasRangeIndexChoice).FirstOrDefault();
-        //var seletedAction=actions.Where( a=> a.currentBiasRangeStart<=biasRangeIndexChoice).Where(a=>a.currentBiasRangeEnd>=1).FirstOrDefault(); //.Where(a=>a.currentBiasRangeEnd>=biasRangeIndexChoice).FirstOrDefault(); // && a.currentBiasRangeEnd>=biasRangeIndexChoice).FirstOrDefault();
-        //var seletedAction=actions.Where( a=> a.bias.currentBiasRangeStart>=1).Count();
-        Console.WriteLine($"seletedAction=[{seletedAction}]");
-        return seletedAction; // Use random with biases
-    }
-}
 
-public class CastleAttackNPC : GameAction<Castle>
-{
-    override public void Act(Castle obj)
-    {
-    }
 
-    override public void AdjustBias(Map map, Castle obj)
-    {
-        bias.biasFactor = 0;
-    }
-}
 
-public class Castle : Building<Castle>
-{
-    public Castle()
-    {
-        proximity=3;
-        AddAction(new CastleAttackNPC());
-    }
 
-	override public void HandleTick(Map map)
-    {
-        AdjustBiases(map);
-        var action = base.Decide();
-        action.Act(this);
-    }
 
-	protected void AdjustBiases(Map map)
-    {
-        foreach (var action in actions)
-        {
-            action.AdjustBias(map, this);
-        }
-    }
-}
 
-public abstract class Building<T> : MapObject
-{
-    public List<GameAction<T>> actions;
 
-    public Building()
-    {
-        actions = new List<GameAction<T>>();
-        //actions.Add(new IdleAction());
-    }
 
-    public void AddAction(GameAction<T> action)
-    {
-        actions.Add(action);
-    }
 
-    protected GameAction<T> Decide()
-    {
-        var biasFactorSum = actions.Sum(a => a.bias.biasFactor);
-        var actionCount = actions.Count;
-        Console.WriteLine($"sum of all biases for [{label}] are=[{biasFactorSum}]");
-        Console.WriteLine($"number of actions for [{label}] are=[{actions.Count}]");
-        var currentBiasRangeStart = 0;
-        foreach (var action in actions)
-        {
-            action.bias.currentBiasRangeStart = currentBiasRangeStart;
-            currentBiasRangeStart += action.bias.biasFactor;
-            Console.WriteLine($"[{action.GetType().Name}] bias range=[{action.bias.currentBiasRangeStart},{action.bias.currentBiasRangeEnd}]");
-        }
-        var rand = new Random();
-        var biasRangeIndexChoice = rand.Next(0, biasFactorSum);
-        Console.WriteLine($"biasRangeIndexChoice=[{biasRangeIndexChoice}]");
-        var seletedAction = actions.Where(a => a.bias.currentBiasRangeStart <= biasRangeIndexChoice && a.bias.currentBiasRangeEnd >= biasRangeIndexChoice).FirstOrDefault();
-        //var seletedAction=actions.Where( a=> a.currentBiasRangeStart<=biasRangeIndexChoice).Where(a=>a.currentBiasRangeEnd>=1).FirstOrDefault(); //.Where(a=>a.currentBiasRangeEnd>=biasRangeIndexChoice).FirstOrDefault(); // && a.currentBiasRangeEnd>=biasRangeIndexChoice).FirstOrDefault();
-        //var seletedAction=actions.Where( a=> a.bias.currentBiasRangeStart>=1).Count();
-        Console.WriteLine($"seletedAction=[{seletedAction}]");
-        if(seletedAction!=null) return seletedAction; else return null;
-    }
-}
-
-public abstract class MapObject
-{
-    public Position pos;
-    public string label;
-    public int proximity;
-    public Faction.FactionEnum faction;
-    public abstract void HandleTick(Map map);
-}
-
-public class Position
-{
-    public int x;
-    public int y;
-}
-
-public class Map
-{
-    public MapObject[,] map;
-    public List<MapObject> mapObjects;
-
-    public Map(int xTiles, int yTiles)
-    {
-        map = new MapObject[xTiles, yTiles];
-        mapObjects = new List<MapObject>();
-    }
-
-    public void Add(MapObject mapObject)
-    {
-        map[mapObject.pos.x, mapObject.pos.y] = mapObject;
-        mapObjects.Add(mapObject);
-    }
-
-    public void HandleTick()
-    {
-        foreach (var mapObject in mapObjects)
-            mapObject.HandleTick(this);
-    }
-}
 

@@ -36,6 +36,30 @@
                 "${workspaceFolder}/console/console.csproj"
             ],
             "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "build-web-api",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/webapi/webapi.csproj",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "watch-web-api",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "watch",
+                "run",
+                "--project",
+                "${workspaceFolder}/webapi/webapi.csproj"
+            ],
+            "problemMatcher": "$msCompile"
         }
     ]
 }
