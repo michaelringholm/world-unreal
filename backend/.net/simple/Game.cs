@@ -25,11 +25,14 @@ public class Game
         Map map = new Map(50, 50);
         var orc = new Warrior { pos = new Position { x = 8, y = 5 }, label = "Orc", faction = Faction.FactionEnum.Orc };
         var orcCastle = new Castle { pos = new Position { x = 2, y = 3 }, label = "Orc Castle", faction = Faction.FactionEnum.Orc };
-        var human = new Warrior { pos = new Position { x = 30, y = 7 }, label = "Human", faction = Faction.FactionEnum.Human };
+        //var human = new Warrior { pos = new Position { x = 30, y = 7 }, label = "Human", faction = Faction.FactionEnum.Human };
+        var human = new Warrior { pos = new Position { x = 20, y = 7 }, label = "Human", faction = Faction.FactionEnum.Human };
+        var human2 = new Warrior { pos = new Position { x = 5, y = 7 }, label = "Human 2", faction = Faction.FactionEnum.Human };
         var humanCastle = new Castle { pos = new Position { x = 36, y = 9 }, label = "Human Castle", faction = Faction.FactionEnum.Human };
         AddToMap(map, orc);
         AddToMap(map, orcCastle);
         AddToMap(map, human);
+        AddToMap(map, human2);
         AddToMap(map, humanCastle);
         return map;
     }
@@ -233,7 +236,7 @@ public abstract class NPC<T> : MapObject
         {
             action.bias.currentBiasRangeStart = currentBiasRangeStart;
             currentBiasRangeStart += action.bias.biasFactor;
-            Console.WriteLine($"[{action.GetType().Name}] bias range=[{action.bias.currentBiasRangeStart},{action.bias.currentBiasRangeEnd}]");
+            //Console.WriteLine($"[{action.GetType().Name}] bias range=[{action.bias.currentBiasRangeStart},{action.bias.currentBiasRangeEnd}]");
         }
         var rand = new Random();
         var biasRangeIndexChoice = rand.Next(0, biasFactorSum);
