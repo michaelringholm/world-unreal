@@ -25,7 +25,7 @@ function drawCanvas() {
     context.imageSmoothingEnabled = false;
 }
 
-function pickImage(factionName, mapObjectType) {
+function pickImage(factionName, mapObjectType, label) {
     var orcImg = $("#orc-icon-48")[0];
     var humanImg = $("#knight-icon-48")[0];
     var humanCastleImg = $("#castle-icon-48")[0];
@@ -39,7 +39,7 @@ function pickImage(factionName, mapObjectType) {
     }
     else if(factionName==FACTIONS.HUMAN) {
         if(mapObjectType=="Castle") return humanCastleImg;
-        if(mapObjectType=="Warrior") return humanImg;
+        if(mapObjectType=="Warrior") { humanImg.title=label; return humanImg; } // https://stackoverflow.com/questions/8429011/how-to-write-text-on-top-of-image-in-html5-canvas
         else return unknownImg;
     }
     else return unknownImg;
@@ -60,7 +60,7 @@ function drawMap(mapObjects) {
     //const img = new Image();
     //img.src = "https://cdna.artstation.com/p/assets/images/images/026/799/902/large/chairat-toraya-5-1.jpg?1589771227";
     //for(var mapObject in mapObjects) {
-    mapObjects.forEach(mapObject=>context.drawImage(pickImage(mapObject.factionName, mapObject.mapObjectType), mapObject.pos.x*mapObjectImageSize, mapObject.pos.y*mapObjectImageSize, mapObjectImageSize, mapObjectImageSize));
+    mapObjects.forEach(mapObject=>context.drawImage(pickImage(mapObject.factionName, mapObject.mapObjectType, mapObject.label), mapObject.pos.x*mapObjectImageSize, mapObject.pos.y*mapObjectImageSize, mapObjectImageSize, mapObjectImageSize));
     //mapObjects.forEach(mapObject=>context.drawImage(orcImg, mapObject.pos.x*mapObjectImageSize, mapObject.pos.y*mapObjectImageSize, mapObjectImageSize, mapObjectImageSize));
 }
 
