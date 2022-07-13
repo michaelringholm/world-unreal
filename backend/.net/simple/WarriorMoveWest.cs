@@ -4,6 +4,7 @@ public class WarriorMoveWest : WarriorMove
     override public void Act(Warrior warrior)
     {
         Console.WriteLine($"moving west...");
+        warrior.pos.x-=1;
     }
 
     override public void AdjustBias(Map map, Warrior warrior) {

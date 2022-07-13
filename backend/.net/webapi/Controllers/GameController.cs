@@ -8,21 +8,25 @@ namespace webapi.Controllers;
 public class GameController : ControllerBase
 {
     private readonly ILogger<GameController> _logger;
+    private Game game;
 
-    public GameController(ILogger<GameController> logger)
+    public GameController(ILogger<GameController> logger, Game game)
     {
         _logger = logger;
+        //_logger.LogInformation("=============>GameController.Constructor() called");
+        //System.IO.File.AppendAllText("./obj/api.log", "GameController constructor() called\n");
+        this.game=game;
+        //game.StartGame();
+		var roundsToSimulate = 1;
     }
 
     [HttpPost(Name = "GetMap")]
     public ObjectResult Get()
     {
-         Console.WriteLine("started...");
-        var game=new Game();
-        game.StartGame();
-		var roundsToSimulate = 1;
+        //_logger.LogInformation("=============>GameController.Get() called");
+        //_logger.LogInformation($"GameController.Get() called and game id=[{game.GameID}]");
+        //System.IO.File.AppendAllText("./obj/api.log", "GameController.Get() called\n");
 		//for(int i=0;i<roundsToSimulate;i++)	game.Tick(game.Map);
-        Console.WriteLine("ended.");
         //return Ok(new {a="hhh",b="ccc"});
         Response.Headers.AccessControlAllowOrigin="*";
         Response.Headers.AccessControlAllowHeaders="*";
@@ -35,6 +39,6 @@ public class GameController : ControllerBase
         //var ok=Response;
         Response.Headers.AccessControlAllowOrigin="*";
         Response.Headers.AccessControlAllowHeaders="*";
-       return Ok();
+        return Ok();
     }
 }

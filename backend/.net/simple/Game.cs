@@ -7,17 +7,28 @@ namespace com.opusmagus.wu.simple;
 public class Game
 {
     public Map Map { get; set; }
+    public Guid GameID { get; private set; }
+
     public void StartGame()
     {
         Console.WriteLine("started...");
         Map=BuildMap();
+        GameID=Guid.NewGuid();
 		var roundsToSimulate = 1;
-		for(int i=0;i<roundsToSimulate;i++)	Tick(Map);
+		//for(int i=0;i<roundsToSimulate;i++)	Tick(Map);
+        (new Thread(() => {
+            Console.WriteLine("Starting GameTickThread...");
+            while(true) {
+                Thread.Sleep(1000);
+                Tick(Map);
+            }
+        })).Start();
         Console.WriteLine("ended.");
     }
 
     public void Tick(Map map)
     {
+        Console.WriteLine("======>Game.Tick() called...");
         map.HandleTick();
     }
 
