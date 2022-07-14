@@ -4,6 +4,8 @@ public class Castle : Building<Castle>
     public Castle()
     {
         proximity=3;
+        hp=500;
+        attackPower=4;
         AddAction(new CastleAttackNPC());
     }
 
