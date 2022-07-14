@@ -30,7 +30,9 @@ public class GameController : ControllerBase
         //return Ok(new {a="hhh",b="ccc"});
         Response.Headers.AccessControlAllowOrigin="*";
         Response.Headers.AccessControlAllowHeaders="*";
-        return Ok(game.Map.mapObjects);
+        //return Ok( new { mapObjects=game.Map.mapObjects, mapActionObjects=game.Map.mapObjects.Where(mo=>mo is (MapActionObject<mo.GetType()>)).Cast<MapActionObject<Type>>() });
+        return Ok( new { mapObjects=game.Map.mapObjects, mapActionObjects=game.Map.mapObjects.Cast<Object>() });
+        //return Ok( game.Map.mapObjects.Cast<Object>() );
     }
 
     [HttpOptions(Name = "GetMap")]

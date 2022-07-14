@@ -1,13 +1,13 @@
 namespace com.opusmagus.wu.simple;
-public class IdleAction : GameAction<Object>
+public class IdleAction<T> : GameAction<T>
 {
-    override public void Act(Map map, Object obj)
+    override public void Act(Map map, T obj)
     {
         Console.WriteLine($"staying idle...");
     }
 
-    override public void AdjustBias(Map map, Object actionableObject)
+    override public void AdjustBias(Map map, T actionableObject)
     {
-        bias.biasFactor = 0;
+        bias.biasFactor = 1;
     }
 }

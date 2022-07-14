@@ -1,14 +1,12 @@
 namespace com.opusmagus.wu.simple;
-public abstract class NPC<T> : MapObject
+public abstract class NPC<T> : MapActionObject<T>
 {
-    public List<GameAction<T>> actions;
-    public int hp { get; set; }
-    public int attackPower { get; set; }
+    public Direction direction { get; internal set; }   
 
     public NPC()
     {
         actions = new List<GameAction<T>>();
-        //actions.Add(new IdleAction());
+        actions.Add(new IdleAction<T>());
     }
 
     public GameAction<T>? seletedAction { get; private set; }

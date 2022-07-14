@@ -1,14 +1,10 @@
 namespace com.opusmagus.wu.simple;
-public abstract class Building<T> : MapObject
+public abstract class Building<T> : MapActionObject<T>
 {
-    public List<GameAction<T>> actions;
-    public int hp { get; set; }
-    public int attackPower { get; set; }
-
     public Building()
     {
         actions = new List<GameAction<T>>();
-        //actions.Add(new IdleAction());
+        actions.Add(new IdleAction<T>());
     }
 
     public void AddAction(GameAction<T> action)

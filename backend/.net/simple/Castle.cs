@@ -1,5 +1,5 @@
 namespace com.opusmagus.wu.simple;
-public class Castle : Building<Castle>
+public class Castle : Building<Castle>, IActionable
 {
     public Castle()
     {

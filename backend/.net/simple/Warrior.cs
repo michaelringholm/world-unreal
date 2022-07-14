@@ -1,8 +1,10 @@
 namespace com.opusmagus.wu.simple;
-public class Warrior : NPC<Warrior>
-{
+public class Warrior : NPC<Warrior>, IActionable
+{    
     public Warrior()
     {
+        hp=20;
+        attackPower=2;
         AddAction(new WarriorMoveAnywhere());
         AddAction(new WarriorMoveNorth());
         AddAction(new WarriorMoveSouth());
