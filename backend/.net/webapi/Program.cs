@@ -1,7 +1,22 @@
+using System.Net;
 using com.opusmagus.wu.simple;
 
 var builder = WebApplication.CreateBuilder(args);
 
+/*builder.Services.AddHttpsRedirection(options =>
+{
+    options.RedirectStatusCode = (int)HttpStatusCode.TemporaryRedirect;
+    options.HttpsPort = 5001;
+});*/
+/*if (!builder.Environment.IsDevelopment())
+{
+    builder.Services.AddHttpsRedirection(options =>
+    {
+        options.RedirectStatusCode = (int)HttpStatusCode.PermanentRedirect;
+        options.HttpsPort = 5001;
+    });
+}*/
+if (builder.Environment.IsDevelopment()) builder.WebHost.UseUrls("https://localhost:5001/");
 // Add services to the container.
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

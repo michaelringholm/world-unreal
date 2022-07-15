@@ -12,7 +12,7 @@ const verticalCells=50;
 const FACTIONS={ORC:"Orc",HUMAN:"Human"};
 
 function getMapData() {
-    post("https://localhost:7243/Game",{}, drawMap);
+    post("https://localhost:5001/Game",{}, drawMap);
 }
 
 function drawCanvas() {
@@ -49,7 +49,12 @@ function pickImage2(factionName, mapObjectType) {
     return orcImg;
 }
 
-function drawMap(mapObjects) {
+function drawImage(mapObject) {
+    context.drawImage(pickImage(mapObject.factionName, mapObject.mapObjectType, mapObject.label), mapObject.pos.x*mapObjectImageSize, mapObject.pos.y*mapObjectImageSize, mapObjectImageSize, mapObjectImageSize);
+    drawHealthbar(mapObject.pos.x*mapObjectImageSize, mapObject.pos.y*mapObjectImageSize, 5, 100);
+}
+
+function drawMap(response) {
     logDebug("drawMap()");
     var orcImg = $("#orc-icon-48")[0];
     var humanImg = $("#knight-icon-48")[0];
@@ -60,8 +65,15 @@ function drawMap(mapObjects) {
     //const img = new Image();
     //img.src = "https://cdna.artstation.com/p/assets/images/images/026/799/902/large/chairat-toraya-5-1.jpg?1589771227";
     //for(var mapObject in mapObjects) {
-    mapObjects.forEach(mapObject=>context.drawImage(pickImage(mapObject.factionName, mapObject.mapObjectType, mapObject.label), mapObject.pos.x*mapObjectImageSize, mapObject.pos.y*mapObjectImageSize, mapObjectImageSize, mapObjectImageSize));
+    
+    response.mapActionObjects.forEach(mapObject=>drawImage(mapObject));
     //mapObjects.forEach(mapObject=>context.drawImage(orcImg, mapObject.pos.x*mapObjectImageSize, mapObject.pos.y*mapObjectImageSize, mapObjectImageSize, mapObjectImageSize));
 }
 
-
+function drawHealthbar(x, y, width, thickness) {
+    context.beginPath();
+    context.rect(x-width/2, y, width, thickness);
+    context.fillStyle="red";
+    context.closePath();
+    context.fill();
+}

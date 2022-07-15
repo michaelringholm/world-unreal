@@ -7,6 +7,18 @@ Console.WriteLine("console started...");
 //game.StartNewGame();
 var game=new Game();
 game.StartGame();
-var json=JsonSerializer.Serialize(game.Map.mapObjects);
-Console.WriteLine($"json={json}");
+
+(new Thread(() => {            
+    while(true) {
+        Thread.Sleep(1000);
+        try {
+        var json=JsonSerializer.Serialize(game.Map.mapObjects);
+        var response=new { mapObjects=game.Map.mapObjects, mapActionObjects=game.Map.mapObjects.Cast<Object>() };
+        Console.WriteLine($"json={JsonSerializer.Serialize(response)}");
+        }
+        catch(Exception ex) {
+            var ex2=ex;
+        }
+    }
+})).Start();
 Console.WriteLine("console ended.");
