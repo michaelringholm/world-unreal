@@ -4,6 +4,7 @@ public class Castle : Building<Castle>, IActionable
     public Castle()
     {
         proximity=3;
+        baseHp=500;
         hp=500;
         attackPower=4;
         AddAction(new CastleAttackNPC());

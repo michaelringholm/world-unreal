@@ -51,7 +51,9 @@ function pickImage2(factionName, mapObjectType) {
 
 function drawImage(mapObject) {
     context.drawImage(pickImage(mapObject.factionName, mapObject.mapObjectType, mapObject.label), mapObject.pos.x*mapObjectImageSize, mapObject.pos.y*mapObjectImageSize, mapObjectImageSize, mapObjectImageSize);
-    drawHealthbar(mapObject.pos.x*mapObjectImageSize, mapObject.pos.y*mapObjectImageSize, 5, 100);
+    var barWidth=mapObjectImageSize*(mapObject.hp/mapObject.baseHp);
+    if(mapObject.hp<0) barWidth=0;
+    drawHealthbar(mapObject.pos.x*mapObjectImageSize, mapObject.pos.y*mapObjectImageSize, barWidth, 10, 2);
 }
 
 function drawMap(response) {
@@ -70,9 +72,10 @@ function drawMap(response) {
     //mapObjects.forEach(mapObject=>context.drawImage(orcImg, mapObject.pos.x*mapObjectImageSize, mapObject.pos.y*mapObjectImageSize, mapObjectImageSize, mapObjectImageSize));
 }
 
-function drawHealthbar(x, y, width, thickness) {
+function drawHealthbar(x, y, width, thickness, marginBottom) {
     context.beginPath();
-    context.rect(x-width/2, y, width, thickness);
+    //context.rect(x-width/2, y, width, thickness);
+    context.rect(x, y-thickness-marginBottom, width, thickness);
     context.fillStyle="red";
     context.closePath();
     context.fill();

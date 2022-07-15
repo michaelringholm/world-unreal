@@ -3,6 +3,7 @@ public class Warrior : NPC<Warrior>, IActionable
 {    
     public Warrior()
     {
+        baseHp=20;
         hp=20;
         attackPower=2;
         AddAction(new WarriorMoveAnywhere());
