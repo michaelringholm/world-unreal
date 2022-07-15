@@ -26,6 +26,8 @@ var game=new Game();
 game.StartGame();
 builder.Services.AddSingleton<Game>(game);
 var app = builder.Build();
+if (app.Environment.IsDevelopment()) app.UseExceptionHandler("/error-dev");
+else app.UseExceptionHandler("/error");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

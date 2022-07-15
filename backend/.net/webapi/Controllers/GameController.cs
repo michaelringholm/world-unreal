@@ -1,10 +1,10 @@
 using com.opusmagus.wu.simple;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 
 namespace webapi.Controllers;
 
 [ApiController]
-[Route("[controller]")]
 public class GameController : ControllerBase
 {
     private readonly ILogger<GameController> _logger;
@@ -20,8 +20,29 @@ public class GameController : ControllerBase
 		var roundsToSimulate = 1;
     }
 
-    [HttpPost(Name = "GetMap")]
-    public ObjectResult Get()
+    [Route("/api/game/map")]
+    //[HttpPost(Name = "GetMap")]
+    [HttpPost,HttpOptions]
+    public ActionResult GetMap()
+    {
+        //_logger.LogInformation("=============>GameController.Get() called");
+        //_logger.LogInformation($"GameController.Get() called and game id=[{game.GameID}]");
+        //System.IO.File.AppendAllText("./obj/api.log", "GameController.Get() called\n");
+		//for(int i=0;i<roundsToSimulate;i++)	game.Tick(game.Map);
+        //return Ok(new {a="hhh",b="ccc"});
+        
+        Response.Headers.AccessControlAllowOrigin="*";
+        Response.Headers.AccessControlAllowHeaders="*";
+        // Swagger does not like two methods with same route even if HTTP method is different
+        if(Response.HttpContext.Request.Method==HttpMethod.Options.ToString()) return Ok(); 
+        //return Ok( new { mapObjects=game.Map.mapObjects, mapActionObjects=game.Map.mapObjects.Where(mo=>mo is (MapActionObject<mo.GetType()>)).Cast<MapActionObject<Type>>() });
+        return Ok( new { gameID=game.GameID, xTiles=game.Map.xTiles, yTiles=game.Map.yTiles });
+        //return Ok( game.Map.mapObjects.Cast<Object>() );
+    }
+
+    [Route("/api/game/map-details")]
+    [HttpPost,HttpOptions]
+    public ActionResult GetMapObjects()
     {
         //_logger.LogInformation("=============>GameController.Get() called");
         //_logger.LogInformation($"GameController.Get() called and game id=[{game.GameID}]");
@@ -30,17 +51,10 @@ public class GameController : ControllerBase
         //return Ok(new {a="hhh",b="ccc"});
         Response.Headers.AccessControlAllowOrigin="*";
         Response.Headers.AccessControlAllowHeaders="*";
+        // Swagger does not like two methods with same route even if HTTP method is different
+        if(Response.HttpContext.Request.Method==HttpMethod.Options.ToString()) return Ok(); 
         //return Ok( new { mapObjects=game.Map.mapObjects, mapActionObjects=game.Map.mapObjects.Where(mo=>mo is (MapActionObject<mo.GetType()>)).Cast<MapActionObject<Type>>() });
-        return Ok( new { mapObjects=game.Map.mapObjects, mapActionObjects=game.Map.mapObjects.Cast<Object>() });
+        return Ok( new { mapObjects=game.Map.mapObjects, mapActionObjects=game.Map.mapObjects.Cast<Object>(), xTiles=game.Map.xTiles, yTiles=game.Map.yTiles });
         //return Ok( game.Map.mapObjects.Cast<Object>() );
-    }
-
-    [HttpOptions(Name = "GetMap")]
-    public ActionResult GetMapOptions()
-    {
-        //var ok=Response;
-        Response.Headers.AccessControlAllowOrigin="*";
-        Response.Headers.AccessControlAllowHeaders="*";
-        return Ok();
     }
 }
